@@ -2,7 +2,8 @@
   (:require [play-clj.core :refer :all]
             [play-clj.ui :refer :all]
             [play-clj.g2d :refer :all]
-            [yuggoth.sprite :refer :all]))
+            [yuggoth.sprite :refer :all]
+            [yuggoth.entities.spaceman :as ents]))
 
 (def ^:dynamic *yuggoth-debug* true)
 
@@ -13,16 +14,18 @@
 ;; Forward declarations
 (declare yuggoth main-screen)
 
+(defn on-show
+  [screen entities]
+  (update! screen :renderer (stage))
+  (let [sprite (load-sprite ents/spaceman-sprite )
+        _ (println sprite)]
+    [(label "Hello world!" (color :white))
+     sprite
+     ]))
+
 (defscreen main-screen
   :on-show
-  (fn [screen entities]
-    (let [ss (load-spritesheet "spaceman_sheet_hires.png" :cell-width 64 :cell-height 96)]
-
-      (update! screen :renderer (stage))
-      [(label "Hello yuggoth!" (color :white))
-
-       (assoc (ss [0 0])
-        :something-else 0)]))
+  on-show
 
   :on-render
   (fn [screen entities]
@@ -40,8 +43,3 @@
   :on-create
   (fn [this]
     (set-screen! this main-screen)))
-
-
-(comment
-  (key-code :F5))
-
