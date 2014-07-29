@@ -2,7 +2,8 @@
   (:require [play-clj.core :refer :all]
             [play-clj.ui :refer :all]
             [play-clj.g2d :refer :all]
-            [yuggoth.sprite :refer :all]))
+            [yuggoth.sprite :refer :all]
+            [yuggoth.entities.spaceman :as ents]))
 
 (defonce yuggoth-asset-manager (asset-manager))
 (set-asset-manager! yuggoth-asset-manager)
@@ -12,13 +13,10 @@
 (defn on-show
   [screen entities]
   (update! screen :renderer (stage))
-  (let [spritesheet (load-spritesheet "spaceman_sheet_hires.png" :cell-width 64 :cell-height 96)
-        ;_ spritesheet
-        ]
+  (let [sprite (load-sprite ents/spaceman-sprite )
+        _ (println sprite)]
     [(label "Hello world!" (color :white))
-
-     ;(assoc (spritesheet [0 1]) :x 0 :y 0)
-     (assoc(spritesheet [0 2]) :x 0 :y 0)
+     sprite
      ]))
 
 (defscreen main-screen

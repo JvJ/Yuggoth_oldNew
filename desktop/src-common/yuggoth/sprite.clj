@@ -24,7 +24,7 @@
   :cell-height
   :texture
   "
-  [filename &{:keys [cell-width cell-height]}]
+  [filename &{[cell-width cell-height] :cell-dimensions}]
   ;; TODO: replace this with cleaner exception?
   {:pre [filename cell-width cell-height]}
 
@@ -68,13 +68,46 @@
   ;; Preconditions require cell dimensions
   {:pre [delay, filename, cell-dimensions, cell-width, cell-height]}
 
-  (let [states (dissoc m :delay :cell-dimensions)]
-    {}
-    ))
+  (let [states (dissoc m :delay :filename :cell-dimensions)
+        states (for [[state frames] states
+                     :let [m-data (apply merge (filter map? frames))
+                           frames (filter vector? frames)]]
+                 [state
+                 (for [frame frames
+                       :let [[y x dly] frame]]
+                   {:cell [y x]
+                    :delay (or dly delay)})])]
+
+    {:spritespec? true
+     :filename filename
+     :cell-dimensions cell-dimensions
+     :cell-width cell-width
+     :cell-height cell-height
+     :states (into {} states)}))
+
+
+(comment
+  (sprite-spec :delay 0.5
+               :filename "spaceman_sheet_hires.png"
+               :cell-dimensions [64 96]
+               :standing [[0 1] ]))
+
 
 ;; Note: to create a renderable entity, something like {:object #Texture} needs to be present
 (defn load-sprite
   "Loads the textures associated with the sprite entity."
-  [spec]
-  )
+  [{:keys [spritespec?
+           filename
+           cell-dimensions
+           cell-width
+           cell-height
+           states]
+    :as spec}]
+  {:pre [spritespec?, filename, cell-dimensions, cell-width, cell-height, states]}
+  (let [sheet (load-spritesheet filename :cell-dimensions cell-dimensions)
+        _ (if-not (sheet [0 0])
+            (throw
+             (Exception. "load-sprite: Spritesheet requires at least one cell.")))]
+    (assoc (sheet [0 0])
+      :sprite? true)))
 
