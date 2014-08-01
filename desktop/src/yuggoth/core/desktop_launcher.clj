@@ -8,3 +8,7 @@
   []
   (LwjglApplication. yuggoth "yuggoth" 800 600)
   (Keyboard/enableRepeatEvents true))
+
+;; LEFTOFF: Redo all the physics related work
+(comment
+  (-main))
